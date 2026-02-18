@@ -120,16 +120,11 @@
         <img src="MITSHeader.png" alt="Institution Header" class="header-image" onerror="this.style.display='none'">
     </div>
     
-    <!-- Date and Place -->
-    <div class="date-place">
-        <p>Date: {{ letter.date }}</p>
-        <p>Place: {{ letter.place }}</p>
-    </div>
-    
     <!-- Recipient -->
     <div class="recipient">
-        <p>To,</p>
-        <p>{{ letter.to }}</p>
+        <p style="display: flex; justify-content: space-between;"><span>To,</span> <span>Date: {{ letter.date }}</span></p>
+        <p style="display: flex; justify-content: space-between;"><span>{{ letter.to }}</span><span>Place: {{ letter.place }}</span></p>
+        <p>MITS - Deemed to be University</p>
     </div>
     
     <!-- Subject -->
