@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - AshvPermission{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('save_settings') }}">
+                    <!-- Header Configuration -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-building"></i> Institution Header
+                    </h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Institution Name</label>
+                        <input type="text" class="form-control" name="institution_name" 
+                            value="{{ header.institution_name }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="institution_address" 
+                            value="{{ header.institution_address }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control" name="institution_city" 
+                            value="{{ header.institution_city }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Contact</label>
+                        <input type="text" class="form-control" name="institution_contact" 
+                            value="{{ header.institution_contact }}">
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Default Values -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-sliders"></i> Default Values
+                    </h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Default Place</label>
+                        <input type="text" class="form-control" name="default_place" 
+                            value="{{ default_place }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Default Subject</label>
+                        <input type="text" class="form-control" name="default_subject" 
+                            value="{{ default_subject }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Default Body</label>
+                        <textarea class="form-control" name="default_body" rows="4">{{ default_body }}</textarea>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Department Mapping Info -->
+                    <h6 class="border-bottom pb-2 mb-3">
+                        <i class="bi bi-diagram-3"></i> Department Mapping Info
+                    </h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header bg-success text-white">
+                                    <small><strong>First Year Batches</strong></small>
+                                </div>
+                                <div class="card-body">
+                                    <small>
+                                        {% for batch in first_year_batches %}
+                                        <span class="badge bg-success me-1">{{ batch }}</span>
+                                        {% endfor %}
+                                    </small>
+                                    <p class="small text-muted mt-2 mb-0">
+                                        Roll numbers starting with these are treated as First Year
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    <small><strong>Department Codes</strong></small>
+                                </div>
+                                <div class="card-body">
+                                    <small>
+                                        {% for code, name in dept_codes.items() %}
+                                        <span class="badge bg-secondary me-1">{{ code }}</span>
+                                        {% endfor %}
+                                    </small>
+                                    <p class="small text-muted mt-2 mb-0">
+                                        CS, EC, ME, EE, CE, IT, AI, etc.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info small">
+                        <i class="bi bi-info-circle"></i>
+                        To permanently change department mappings, edit the <code>config.py</code> file.
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
