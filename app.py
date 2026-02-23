@@ -5,15 +5,26 @@ Supports UG (First Year & Senior) and PG (MBA/MCA) students
 """
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, Response
+from functools import wraps
 from datetime import datetime
 from department_mapper import DepartmentMapper, parse_roll_numbers
 from config import (
     DEFAULT_SUBJECT, DEFAULT_BODY, DEFAULT_PLACE, HEADER_CONFIG,
-    UG_DEPARTMENT_CODES
+    UG_DEPARTMENT_CODES, SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
 )
+from models import db, Letter, RollNumber
 
 app = Flask(__name__)
 app.secret_key = 'ashvpermission_secret_key_change_in_production'
+
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
+db.init_app(app)
+
+# Create tables
+with app.app_context():
+    db.create_all()
 
 # Initialize mapper
 mapper = DepartmentMapper()
@@ -37,8 +48,18 @@ def get_defaults():
 def inject_globals():
     """Inject global variables into all templates"""
     return {
-        'current_year': datetime.now().year
+        'current_year': datetime.now().year,
+        'is_admin': session.get('is_admin', False)
     }
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_admin'):
+            flash('Please log in as an administrator to access this page.', 'danger')
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/')
@@ -105,6 +126,27 @@ def generate():
         'subject': subject,
         'body': body
     }
+    # Save letter to database
+    new_letter = Letter(
+        date=letter_data['date'],
+        place=letter_data['place'],
+        to_address=letter_data['to'],
+        subject=letter_data['subject'],
+        body=letter_data['body']
+    )
+    db.session.add(new_letter)
+    db.session.commit()
+    
+    # Save roll numbers
+    for dept, info in summary['departments'].items():
+        for roll in info['roll_numbers']:
+            rn = RollNumber(roll_no=roll, letter_id=new_letter.id)
+            db.session.add(rn)
+    db.session.commit()
+
+    # Add reference number to letter_data for templates
+    letter_data['reference_no'] = new_letter.reference_no
+    
     session['letter_data'] = letter_data
     session['summary'] = summary
     
@@ -172,6 +214,128 @@ def save_settings():
     
     flash('Settings saved successfully!', 'success')
     return redirect(url_for('settings'))
+
+# --- ADMIN ROUTES ---
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == 'admin' and password == 'admin':
+            session['is_admin'] = True
+            flash('Admin logged in successfully.', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid username or password.', 'danger')
+            
+    return render_template('admin/login.html', header=get_header_config())
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('is_admin', None)
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    letters = Letter.query.order_by(
+        db.case(
+            (Letter.status == 'pending', 0),
+            else_=1
+        ),
+        Letter.created_at.desc()
+    ).all()
+    return render_template('admin/dashboard.html', letters=letters, header=get_header_config())
+
+@app.route('/admin/search')
+@admin_required
+def admin_search():
+    query_roll = request.args.get('roll_no', '').strip().upper()
+    results = []
+    
+    if query_roll:
+        # Find all roll numbers that match (exact match)
+        roll_records = RollNumber.query.filter_by(roll_no=query_roll).all()
+        
+        # Get associated letters, ordered by date
+        for record in roll_records:
+            if record.letter:
+                results.append(record.letter)
+                
+        # Sort by date descending
+        results.sort(key=lambda x: x.date, reverse=True)
+        
+    return render_template('admin/search.html', 
+                          query_roll=query_roll, 
+                          results=results, 
+                          header=get_header_config())
+
+@app.route('/admin/letter/<int:letter_id>')
+@admin_required
+def admin_letter_detail(letter_id):
+    letter = Letter.query.get_or_404(letter_id)
+    return render_template('admin/letter_detail.html', letter=letter, header=get_header_config())
+
+@app.route('/admin/letter/<int:letter_id>/print')
+@admin_required
+def admin_print_letter(letter_id):
+    letter = Letter.query.get_or_404(letter_id)
+    
+    letter_data = {
+        'date': letter.date,
+        'place': letter.place,
+        'to': letter.to_address,
+        'subject': letter.subject,
+        'body': letter.body,
+        'reference_no': letter.reference_no
+    }
+    
+    roll_numbers = [r.roll_no for r in letter.roll_numbers]
+    summary = mapper.get_unified_summary(roll_numbers)
+    
+    return render_template('letter.html',
+        header=get_header_config(),
+        letter=letter_data,
+        summary=summary
+    )
+
+@app.route('/admin/letter/<int:letter_id>/verify', methods=['POST'])
+@admin_required
+def admin_verify_letter(letter_id):
+    letter = Letter.query.get_or_404(letter_id)
+    letter.status = 'verified'
+    db.session.commit()
+    flash(f'Letter {letter.reference_no} marked as verified.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/letter/<int:letter_id>/reject', methods=['POST'])
+@admin_required
+def admin_reject_letter(letter_id):
+    letter = Letter.query.get_or_404(letter_id)
+    letter.status = 'rejected'
+    db.session.commit()
+    flash(f'Letter {letter.reference_no} marked as rejected.', 'warning')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/verified-dates')
+@admin_required
+def admin_verified_dates():
+    # Fetch all letters that are verified
+    verified_letters = Letter.query.filter_by(status='verified').order_by(Letter.date.desc()).all()
+    dates_data = {}
+    for letter in verified_letters:
+        d = letter.date
+        if d not in dates_data:
+            dates_data[d] = set()
+        for r in letter.roll_numbers:
+            dates_data[d].add(r.roll_no)
+            
+    # Sort the dates for display if necessary
+    sorted_dates = sorted(dates_data.keys(), reverse=True)
+    
+    return render_template('admin/verified_dates.html', dates_data=dates_data, sorted_dates=sorted_dates, header=get_header_config())
 
 
 if __name__ == '__main__':

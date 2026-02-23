@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - AshvPermission{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Admin Dashboard</h2>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin_search') }}" class="btn btn-outline-primary"><i class="bi bi-search"></i> Search
+            Student</a>
+        <a href="{{ url_for('admin_verified_dates') }}" class="btn btn-primary"><i class="bi bi-calendar-check"></i>
+            View
+            Verified by Date</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Permission Letters</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ref No</th>
+                        <th>Created At</th>
+                        <th>For Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for letter in letters %}
+                    <tr
+                        class="{% if letter.status == 'pending' %}table-warning{% elif letter.status == 'verified' %}table-success{% elif letter.status == 'rejected' %}table-danger{% endif %}">
+                        <td><strong>{{ letter.reference_no }}</strong></td>
+                        <td>{{ letter.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ letter.date }}</td>
+                        <td title="{{ letter.subject }}">{{ letter.subject[:30] }}{% if letter.subject|length > 30
+                            %}...{% endif %}</td>
+                        <td>
+                            {% if letter.status == 'pending' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i>
+                                Pending</span>
+                            {% elif letter.status == 'verified' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Verified</span>
+                            {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_letter_detail', letter_id=letter.id) }}"
+                                class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i> View</a>
+                            {% if letter.status == 'pending' %}
+                            <form action="{{ url_for('admin_verify_letter', letter_id=letter.id) }}" method="POST"
+                                class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success" title="Verify"><i
+                                        class="bi bi-check-lg"></i></button>
+                            </form>
+                            <form action="{{ url_for('admin_reject_letter', letter_id=letter.id) }}" method="POST"
+                                class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Reject"><i
+                                        class="bi bi-x-lg"></i></button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No permission letters found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

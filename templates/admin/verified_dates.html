@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Verified Letters by Date - AshvPermission{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar-check"></i> Verified Roll Numbers by Date</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back
+        to Dashboard</a>
+</div>
+
+{% if not sorted_dates %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> No verified letters found yet.
+</div>
+{% else %}
+<div class="accordion" id="datesAccordion">
+    {% for date in sorted_dates %}
+    <div class="accordion-item mb-3 border rounded shadow-sm">
+        <h2 class="accordion-header" id="heading{{ loop.index }}">
+            <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}"
+                aria-expanded="{% if loop.first %}true{% else %}false{% endif %}"
+                aria-controls="collapse{{ loop.index }}">
+                <div class="d-flex justify-content-between w-100 pe-3">
+                    <strong><i class="bi bi-calendar-event me-2"></i>{{ date }}</strong>
+                    <span class="badge bg-primary rounded-pill">{{ dates_data[date]|length }} students</span>
+                </div>
+            </button>
+        </h2>
+        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}"
+            aria-labelledby="heading{{ loop.index }}">
+            <div class="accordion-body">
+                <div class="row g-2">
+                    {% for roll in dates_data[date]|sort %}
+                    <div class="col-md-3 col-sm-4 col-6">
+                        <div class="p-2 border rounded bg-light text-center font-monospace">
+                            {{ roll }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

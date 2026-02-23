@@ -5,11 +5,12 @@
 # =============================================================================
 # UG First Years: 25MRAXXDDD (e.g., 25MRA05001) - All departments together
 # UG 2nd-4th Years: YY691AXXDD (e.g., 22691A0501) - Department wise
+# UG 2nd-4th Years (Diploma joined): YY695AXXDD (e.g., 22695A0501) - Department wise
 # PG MBA: 25MRC*, 2X691E* (e.g., 25MRC001, 24691E01)
 # PG MCA: 25MRD*, 2X691F* (e.g., 25MRD001, 24691F01)
 # =============================================================================
 
-# Department codes for UG 2nd-4th years (XX in YY691AXXDD)
+# Department codes for UG 2nd-4th years (XX in YY691AXXDD or YY695AXXDD)
 UG_DEPARTMENT_CODES = {
     "01": "CE",      # Civil Engineering
     "02": "EEE",     # Electrical & Electronics Engineering
@@ -60,6 +61,10 @@ HEADER_CONFIG = {
 
 # Default place
 DEFAULT_PLACE = "Madanapalle"
+
+# Database configuration
+SQLALCHEMY_DATABASE_URI = "sqlite:///permissions.db"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # First year pattern identifier
 FIRST_YEAR_PREFIX = "MRA"  # 25MRAXXDDD pattern

@@ -3,7 +3,7 @@ Department Mapper Module
 Maps roll numbers to departments based on MITS roll number formats:
 
 UG First Years: 25MRAXXDDD (all departments grouped together as "First Year")
-UG 2nd-4th Years: YY691AXXDD (department wise based on XX code)
+UG 2nd-4th Years: YY691AXXDD or YY695AXXDD (department wise based on XX code)
 PG MBA: 25MRC*, 2X691E*
 PG MCA: 25MRD*, 2X691F*
 """
@@ -46,8 +46,8 @@ class DepartmentMapper:
             if prefix in roll:
                 return 'PG_MCA'
         
-        # Check UG Senior: YY691AXXDD pattern
-        if '691A' in roll:
+        # Check UG Senior: YY691AXXDD or YY695AXXDD pattern
+        if '691A' in roll or '695A' in roll:
             return 'UG_SENIOR'
         
         return 'UNKNOWN'
@@ -76,9 +76,9 @@ class DepartmentMapper:
             return ("MCA", student_type)
         
         elif student_type == 'UG_SENIOR':
-            # Extract department code from YY691AXXDD
-            # Position of XX is after 691A (index 6-7 in pattern like 22691A0501)
-            match = re.search(r'691A(\d{2})', roll)
+            # Extract department code from YY691AXXDD or YY695AXXDD
+            # Position of XX is after 691A/695A (index 6-7 in pattern like 22691A0501)
+            match = re.search(r'69[15]A(\d{2})', roll)
             if match:
                 dept_code = match.group(1)
                 if dept_code in self.ug_dept_codes:
@@ -217,6 +217,8 @@ if __name__ == "__main__":
         "24691A0301",
         # UG Seniors - CSE AI
         "23691A3101",
+        # UG Seniors (Diploma) - CSE
+        "24695A0501", "24695A0502",
         # PG MBA
         "25MRC001", "24691E01",
         # PG MCA

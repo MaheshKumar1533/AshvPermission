@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Letter Details - AshvPermission{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back
+        to Dashboard</a>
+    <a href="{{ url_for('admin_print_letter', letter_id=letter.id) }}" class="btn btn-primary" target="_blank"><i
+            class="bi bi-printer"></i> Print Letter</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Letter Content</h5>
+                {% if letter.status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% elif letter.status == 'verified' %}
+                <span class="badge bg-success">Verified</span>
+                {% else %}
+                <span class="badge bg-danger">Rejected</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Reference No:</strong> {{ letter.reference_no }}
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>Generated For:</strong> {{ letter.date }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>To:</strong><br>
+                    {{ letter.to_address }}
+                </div>
+                <div class="mb-3">
+                    <strong>Subject:</strong> {{ letter.subject }}
+                </div>
+                <div class="mb-3 border p-3 rounded bg-light">
+                    {{ letter.body.replace('\n', '<br>') | safe }}
+                </div>
+
+                {% if letter.status == 'pending' %}
+                <div class="d-flex gap-2 mt-4">
+                    <form action="{{ url_for('admin_verify_letter', letter_id=letter.id) }}" method="POST">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Verify
+                            Letter</button>
+                    </form>
+                    <form action="{{ url_for('admin_reject_letter', letter_id=letter.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle"></i> Reject
+                            Letter</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Associated Roll Numbers</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush" style="max-height: 500px; overflow-y: auto;">
+                    {% for roll in letter.roll_numbers %}
+                    <li class="list-group-item font-monospace">{{ roll.roll_no }}</li>
+                    {% else %}
+                    <li class="list-group-item text-muted">No roll numbers associated.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer bg-light">
+                <strong>Total Students:</strong> {{ letter.roll_numbers|length }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
