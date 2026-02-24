@@ -6,10 +6,13 @@ UG First Years: 25MRAXXDDD (all departments grouped together as "First Year")
 UG 2nd-4th Years: YY691AXXDD or YY695AXXDD (department wise based on XX code)
 PG MBA: 25MRC*, 2X691E*
 PG MCA: 25MRD*, 2X691F*
+MTech CSE: YYMRB01XXX
+MTech ECE: YYMRB02XXX
 """
 from config import (
     UG_DEPARTMENT_CODES, DEPARTMENT_FULL_NAMES,
-    FIRST_YEAR_PREFIX, PG_MBA_PREFIXES, PG_MCA_PREFIXES
+    FIRST_YEAR_PREFIX, PG_MBA_PREFIXES, PG_MCA_PREFIXES,
+    MTECH_CSE_PREFIXES, MTECH_ECE_PREFIXES
 )
 from collections import defaultdict
 import re
@@ -24,11 +27,13 @@ class DepartmentMapper:
         self.first_year_prefix = FIRST_YEAR_PREFIX
         self.pg_mba_prefixes = PG_MBA_PREFIXES
         self.pg_mca_prefixes = PG_MCA_PREFIXES
+        self.mtech_cse_prefixes = MTECH_CSE_PREFIXES
+        self.mtech_ece_prefixes = MTECH_ECE_PREFIXES
     
     def get_student_type(self, roll_number: str) -> str:
         """
         Determine student type from roll number
-        Returns: 'UG_FIRST_YEAR', 'UG_SENIOR', 'PG_MBA', 'PG_MCA', or 'UNKNOWN'
+        Returns: 'UG_FIRST_YEAR', 'UG_SENIOR', 'PG_MBA', 'PG_MCA', 'MTECH_CSE', 'MTECH_ECE', or 'UNKNOWN'
         """
         roll = roll_number.strip().upper()
         
@@ -45,6 +50,16 @@ class DepartmentMapper:
         for prefix in self.pg_mca_prefixes:
             if prefix in roll:
                 return 'PG_MCA'
+        
+        # Check MTech CSE: YYMRB01XXX
+        for prefix in self.mtech_cse_prefixes:
+            if prefix in roll:
+                return 'MTECH_CSE'
+        
+        # Check MTech ECE: YYMRB02XXX
+        for prefix in self.mtech_ece_prefixes:
+            if prefix in roll:
+                return 'MTECH_ECE'
         
         # Check UG Senior: YY691AXXDD or YY695AXXDD pattern
         if '691A' in roll or '695A' in roll:
@@ -74,6 +89,12 @@ class DepartmentMapper:
         
         elif student_type == 'PG_MCA':
             return ("MCA", student_type)
+        
+        elif student_type == 'MTECH_CSE':
+            return ("MTech-CSE", student_type)
+        
+        elif student_type == 'MTECH_ECE':
+            return ("MTech-ECE", student_type)
         
         elif student_type == 'UG_SENIOR':
             # Extract department code from YY691AXXDD or YY695AXXDD
@@ -134,6 +155,7 @@ class DepartmentMapper:
         ug_first_year_count = 0
         ug_senior_count = 0
         pg_count = 0
+        mtech_count = 0
         
         for dept, rolls in organized.items():
             for roll in rolls:
@@ -144,17 +166,21 @@ class DepartmentMapper:
                     ug_senior_count += 1
                 elif student_type in ('PG_MBA', 'PG_MCA'):
                     pg_count += 1
+                elif student_type in ('MTECH_CSE', 'MTECH_ECE'):
+                    mtech_count += 1
         
         # Build departments info with custom sort order
-        # Order: UG First Year, UG Departments (sorted), PG
+        # Order: UG First Year, UG Departments (sorted), PG, MTech
         departments = {}
         
-        # Custom sort: First Year first, then depts alphabetically, then MBA/MCA at end
+        # Custom sort: First Year first, then depts alphabetically, then MBA/MCA, then MTech
         def sort_key(dept_name):
             if dept_name == 'First Year':
                 return (0, dept_name)
             elif dept_name in ('MBA', 'MCA'):
                 return (2, dept_name)
+            elif dept_name in ('MTech-CSE', 'MTech-ECE'):
+                return (3, dept_name)
             else:
                 return (1, dept_name)
         
@@ -170,10 +196,11 @@ class DepartmentMapper:
         return {
             "total_students": len([r for r in roll_numbers if r.strip()]),
             "first_year_count": ug_first_year_count,
-            "senior_count": ug_senior_count + pg_count,
+            "senior_count": ug_senior_count + pg_count + mtech_count,
             "ug_first_year_count": ug_first_year_count,
             "ug_senior_count": ug_senior_count,
             "pg_count": pg_count,
+            "mtech_count": mtech_count,
             "departments": departments,
             "organized": organized
         }
@@ -223,6 +250,10 @@ if __name__ == "__main__":
         "25MRC001", "24691E01",
         # PG MCA
         "25MRD001", "24691F01",
+        # MTech CSE
+        "25MRB01001", "25MRB01002",
+        # MTech ECE
+        "25MRB02001",
     ]
     
     print("Testing MITS Department Mapper")
@@ -241,6 +272,7 @@ if __name__ == "__main__":
     print(f"UG First Year: {summary['ug_first_year_count']}")
     print(f"UG Seniors: {summary['ug_senior_count']}")
     print(f"PG Students: {summary['pg_count']}")
+    print(f"MTech Students: {summary['mtech_count']}")
     
     print("\nBy Department:")
     for dept, info in summary['departments'].items():

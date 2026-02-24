@@ -40,6 +40,8 @@ DEPARTMENT_FULL_NAMES = {
     "CST": "CSE (IoT)",
     "MBA": "Master of Business Administration",
     "MCA": "Master of Computer Applications",
+    "MTech-CSE": "MTech CSE",
+    "MTech-ECE": "MTech ECE",
 }
 
 # Default letter content
@@ -72,3 +74,7 @@ FIRST_YEAR_PREFIX = "MRA"  # 25MRAXXDDD pattern
 # PG patterns
 PG_MBA_PREFIXES = ["MRC", "691E"]  # 25MRC* or 2X691E*
 PG_MCA_PREFIXES = ["MRD", "691F"]  # 25MRD* or 2X691F*
+
+# MTech patterns (YY = Year Admitted)
+MTECH_CSE_PREFIXES = ["MRB01"]  # YYMRB01XXX (e.g., 25MRB01XXX)
+MTECH_ECE_PREFIXES = ["MRB02"]  # YYMRB02XXX (e.g., 25MRB02XXX)
