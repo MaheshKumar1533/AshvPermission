@@ -36,7 +36,7 @@
                     <tr
                         class="{% if letter.status == 'pending' %}table-warning{% elif letter.status == 'verified' %}table-success{% elif letter.status == 'rejected' %}table-danger{% endif %}">
                         <td><strong>{{ letter.reference_no }}</strong></td>
-                        <td>{{ letter.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ letter.created_at.strftime('%Y-%m-%d %I:%M %p') }}</td>
                         <td>{{ letter.date }}</td>
                         <td title="{{ letter.subject }}">{{ letter.subject[:30] }}{% if letter.subject|length > 30
                             %}...{% endif %}</td>

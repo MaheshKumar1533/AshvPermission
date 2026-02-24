@@ -6,7 +6,7 @@ Supports UG (First Year & Senior) and PG (MBA/MCA) students
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, Response
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from department_mapper import DepartmentMapper, parse_roll_numbers
 from config import (
     DEFAULT_SUBJECT, DEFAULT_BODY, DEFAULT_PLACE, HEADER_CONFIG,
@@ -16,6 +16,8 @@ from models import db, Letter, RollNumber
 
 app = Flask(__name__)
 app.secret_key = 'ashvpermission_secret_key_change_in_production'
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
@@ -48,7 +50,7 @@ def get_defaults():
 def inject_globals():
     """Inject global variables into all templates"""
     return {
-        'current_year': datetime.now().year,
+        'current_year': datetime.now(IST).year,
         'is_admin': session.get('is_admin', False)
     }
 
@@ -67,7 +69,7 @@ def index():
     """Home page with letter creation form"""
     defaults = get_defaults()
     return render_template('index.html',
-        today=datetime.now().strftime('%Y-%m-%d'),
+        today=datetime.now(IST).strftime('%Y-%m-%d'),
         default_place=defaults['place'],
         default_subject=defaults['subject'],
         default_body=defaults['body']
@@ -111,9 +113,9 @@ def generate():
             date_obj = datetime.strptime(date_str, '%Y-%m-%d')
             formatted_date = date_obj.strftime('%B %d, %Y')
         else:
-            formatted_date = datetime.now().strftime('%B %d, %Y')
+            formatted_date = datetime.now(IST).strftime('%B %d, %Y')
     except:
-        formatted_date = datetime.now().strftime('%B %d, %Y')
+        formatted_date = datetime.now(IST).strftime('%B %d, %Y')
     
     # Get summary with unified approach
     summary = mapper.get_unified_summary(roll_numbers)
@@ -173,7 +175,7 @@ def download_html():
         summary=summary
     )
     
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp = datetime.now(IST).strftime('%Y%m%d_%H%M%S')
     filename = f'permission_letter_{timestamp}.html'
     
     return Response(

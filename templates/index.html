@@ -12,19 +12,19 @@
         min-height: 150px;
         cursor: text;
     }
-    
+
     .roll-input-container:focus-within {
         border-color: #4361ee;
         background: #fff;
     }
-    
+
     .roll-tags {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 10px;
     }
-    
+
     .roll-tag {
         display: inline-flex;
         align-items: center;
@@ -36,20 +36,27 @@
         font-size: 0.9em;
         animation: fadeIn 0.2s ease;
     }
-    
+
     @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.8); }
-        to { opacity: 1; transform: scale(1); }
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
-    
+
     .roll-tag.first-year {
         background: #10b981;
     }
-    
+
     .roll-tag.senior {
         background: #6366f1;
     }
-    
+
     .roll-tag .remove-btn {
         background: none;
         border: none;
@@ -61,11 +68,11 @@
         line-height: 1;
         opacity: 0.7;
     }
-    
+
     .roll-tag .remove-btn:hover {
         opacity: 1;
     }
-    
+
     #rollInput {
         border: none;
         outline: none;
@@ -75,50 +82,50 @@
         min-width: 200px;
         padding: 5px;
     }
-    
+
     #rollInput::placeholder {
         color: #adb5bd;
     }
-    
+
     .count-badge {
         font-size: 1.1em;
         padding: 6px 12px;
     }
-    
+
     .dept-preview-card {
         border-left: 4px solid #4361ee;
         transition: all 0.2s ease;
         margin-bottom: 10px;
     }
-    
+
     .dept-preview-card:hover {
         transform: translateX(3px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    
+
     .dept-preview-card.first-year {
         border-left-color: #10b981;
     }
-    
+
     .dept-preview-card.senior {
         border-left-color: #6366f1;
     }
-    
+
     .dept-preview-card.pg {
         border-left-color: #f59e0b;
     }
-    
+
     .roll-tag.pg {
         background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
         color: #92400e;
     }
-    
+
     .roll-grid {
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
     }
-    
+
     .roll-grid-item {
         font-family: 'Courier New', monospace;
         font-size: 0.8em;
@@ -126,7 +133,7 @@
         padding: 2px 8px;
         border-radius: 4px;
     }
-    
+
     .preview-scroll {
         max-height: 450px;
         overflow-y: auto;
@@ -155,27 +162,29 @@
                             <input type="text" class="form-control" name="place" value="{{ default_place }}">
                         </div>
                     </div>
-                    
+
                     <!-- Recipient -->
                     <div class="mb-3">
                         <label class="form-label"><i class="bi bi-person"></i> To (Recipient)</label>
                         <input type="text" class="form-control" name="to" value="The Vice Principal">
                     </div>
-                    
+
                     <!-- Subject -->
                     <div class="mb-3">
                         <label class="form-label"><i class="bi bi-tag"></i> Subject</label>
-                        <input type="text" class="form-control" name="subject" value="{{ default_subject }}" placeholder="Leave empty for default">
+                        <input type="text" class="form-control" name="subject" value="{{ default_subject }}"
+                            placeholder="Leave empty for default">
                     </div>
-                    
+
                     <!-- Body -->
                     <div class="mb-3">
                         <label class="form-label"><i class="bi bi-text-paragraph"></i> Letter Body</label>
-                        <textarea class="form-control" name="body" rows="4" placeholder="Leave empty for default">{{ default_body }}</textarea>
+                        <textarea class="form-control" name="body" rows="4"
+                            placeholder="Leave empty for default">{{ default_body }}</textarea>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <!-- Roll Numbers Input - Single Section -->
                     <div class="mb-3">
                         <label class="form-label d-flex align-items-center">
@@ -184,16 +193,17 @@
                         </label>
                         <div class="roll-input-container" id="rollContainer" onclick="focusInput()">
                             <div class="roll-tags" id="rollTags"></div>
-                            <input type="text" id="rollInput" placeholder="Type roll number & press Enter..." autocomplete="off">
+                            <input type="text" id="rollInput" placeholder="Type roll number & press Enter..."
+                                autocomplete="off">
                         </div>
                         <small class="text-muted mt-2 d-block">
-                            <i class="bi bi-info-circle"></i> Press <kbd>Enter</kbd> after each roll. 
-                            <span class="text-success">●</span> First Year (25/26) 
+                            <i class="bi bi-info-circle"></i> Press <kbd>Enter</kbd> after each roll.
+                            <span class="text-success">●</span> First Year (25/26)
                             <span class="text-primary">●</span> Seniors (21-24) auto-detected.
                         </small>
                         <input type="hidden" name="roll_numbers" id="rollNumbersHidden">
                     </div>
-                    
+
                     <!-- Quick Actions -->
                     <div class="mb-3 d-flex gap-2">
                         <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearAllRolls()">
@@ -203,7 +213,7 @@
                             <i class="bi bi-clipboard"></i> Paste Multiple
                         </button>
                     </div>
-                    
+
                     <!-- Generate Button -->
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">
@@ -214,7 +224,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Preview Panel -->
     <div class="col-lg-7">
         <div class="card">
@@ -229,7 +239,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Instructions Card -->
         <div class="card mt-4">
             <div class="card-header bg-info text-white">
@@ -268,127 +278,127 @@
 
 {% block extra_js %}
 <script>
-// Roll numbers storage
-let rollNumbers = [];
+    // Roll numbers storage
+    let rollNumbers = [];
 
-// DOM elements
-const rollInput = document.getElementById('rollInput');
-const rollTags = document.getElementById('rollTags');
-const rollCount = document.getElementById('rollCount');
-const rollNumbersHidden = document.getElementById('rollNumbersHidden');
-const previewPanel = document.getElementById('previewPanel');
-const totalCount = document.getElementById('totalCount');
+    // DOM elements
+    const rollInput = document.getElementById('rollInput');
+    const rollTags = document.getElementById('rollTags');
+    const rollCount = document.getElementById('rollCount');
+    const rollNumbersHidden = document.getElementById('rollNumbersHidden');
+    const previewPanel = document.getElementById('previewPanel');
+    const totalCount = document.getElementById('totalCount');
 
-function focusInput() {
-    rollInput.focus();
-}
-
-function getStudentType(roll) {
-    roll = roll.toUpperCase();
-    // UG First Year: contains MRA
-    if (roll.includes('MRA')) return 'first-year';
-    // PG MBA: contains MRC or 691E
-    if (roll.includes('MRC') || roll.includes('691E')) return 'pg';
-    // PG MCA: contains MRD or 691F
-    if (roll.includes('MRD') || roll.includes('691F')) return 'pg';
-    // UG Senior: contains 691A
-    if (roll.includes('691A')) return 'senior';
-    return 'unknown';
-}
-
-function addRoll(roll) {
-    roll = roll.trim().toUpperCase();
-    if (!roll || rollNumbers.includes(roll)) {
-        rollInput.value = '';
-        return;
+    function focusInput() {
+        rollInput.focus();
     }
-    rollNumbers.push(roll);
-    updateDisplay();
-    rollInput.value = '';
-}
 
-function removeRoll(roll) {
-    rollNumbers = rollNumbers.filter(r => r !== roll);
-    updateDisplay();
-}
+    function getStudentType(roll) {
+        roll = roll.toUpperCase();
+        // UG First Year: contains MRA
+        if (roll.includes('MRA')) return 'first-year';
+        // PG MBA: contains MRC or 691E
+        if (roll.includes('MRC') || roll.includes('691E')) return 'pg';
+        // PG MCA: contains MRD or 691F
+        if (roll.includes('MRD') || roll.includes('691F')) return 'pg';
+        // UG Senior: contains 691A
+        if (roll.includes('691A')) return 'senior';
+        return 'unknown';
+    }
 
-function clearAllRolls() {
-    if (rollNumbers.length > 0 && confirm('Clear all roll numbers?')) {
-        rollNumbers = [];
+    function addRoll(roll) {
+        roll = roll.trim().toUpperCase();
+        if (!roll || rollNumbers.includes(roll)) {
+            rollInput.value = '';
+            return;
+        }
+        rollNumbers.push(roll);
+        updateDisplay();
+        rollInput.value = '';
+    }
+
+    function removeRoll(roll) {
+        rollNumbers = rollNumbers.filter(r => r !== roll);
         updateDisplay();
     }
-    focusInput();
-}
 
-function pasteRolls() {
-    const text = prompt('Paste roll numbers (comma/space/newline separated):');
-    if (!text) return;
-    
-    const rolls = text.replace(/[\n\t;]/g, ',').split(',');
-    rolls.forEach(item => {
-        item.trim().split(/\s+/).forEach(roll => {
-            if (roll.trim()) addRoll(roll);
+    function clearAllRolls() {
+        if (rollNumbers.length > 0 && confirm('Clear all roll numbers?')) {
+            rollNumbers = [];
+            updateDisplay();
+        }
+        focusInput();
+    }
+
+    function pasteRolls() {
+        const text = prompt('Paste roll numbers (comma/space/newline separated):');
+        if (!text) return;
+
+        const rolls = text.replace(/[\n\t;]/g, ',').split(',');
+        rolls.forEach(item => {
+            item.trim().split(/\s+/).forEach(roll => {
+                if (roll.trim()) addRoll(roll);
+            });
         });
-    });
-}
+    }
 
-function updateDisplay() {
-    // Update tags
-    rollTags.innerHTML = rollNumbers.map(roll => `
+    function updateDisplay() {
+        // Update tags
+        rollTags.innerHTML = rollNumbers.map(roll => `
         <span class="roll-tag ${getStudentType(roll)}">
             ${roll}
             <button type="button" class="remove-btn" onclick="removeRoll('${roll}')">&times;</button>
         </span>
     `).join('');
-    
-    // Update count and hidden input
-    rollCount.textContent = rollNumbers.length;
-    rollNumbersHidden.value = rollNumbers.join(',');
-    
-    // Update preview
-    updatePreview();
-}
 
-function updatePreview() {
-    if (rollNumbers.length === 0) {
-        totalCount.textContent = '0 students';
-        previewPanel.innerHTML = `
+        // Update count and hidden input
+        rollCount.textContent = rollNumbers.length;
+        rollNumbersHidden.value = rollNumbers.join(',');
+
+        // Update preview
+        updatePreview();
+    }
+
+    function updatePreview() {
+        if (rollNumbers.length === 0) {
+            totalCount.textContent = '0 students';
+            previewPanel.innerHTML = `
             <div class="text-center text-muted py-5">
                 <i class="bi bi-diagram-3" style="font-size: 3rem;"></i>
                 <p class="mt-3">Roll numbers will be automatically organized by department here.</p>
             </div>
         `;
-        return;
-    }
-    
-    fetch('{{ url_for("preview_mapping") }}', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roll_numbers: rollNumbers.join(',') })
-    })
-    .then(res => res.json())
-    .then(displayPreview)
-    .catch(err => console.error('Preview error:', err));
-}
+            return;
+        }
 
-function displayPreview(data) {
-    totalCount.textContent = `${data.total_students} students`;
-    
-    // Sort departments alphabetically
-    const depts = Object.keys(data.departments).sort();
-    
-    if (depts.length === 0) {
-        previewPanel.innerHTML = '<div class="text-center text-muted py-3">No valid roll numbers</div>';
-        return;
+        fetch('{{ url_for("preview_mapping") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roll_numbers: rollNumbers.join(',') })
+        })
+            .then(res => res.json())
+            .then(displayPreview)
+            .catch(err => console.error('Preview error:', err));
     }
-    
-    previewPanel.innerHTML = depts.map(dept => {
-        const info = data.departments[dept];
-        const isFirstYearDept = dept.includes('First Year');
-        const isPGDept = dept.includes('MBA') || dept.includes('MCA');
-        const cardClass = isFirstYearDept ? 'first-year' : (isPGDept ? 'pg' : 'senior');
-        const badgeClass = isFirstYearDept ? 'bg-success' : (isPGDept ? 'bg-warning text-dark' : 'bg-primary');
-        return `
+
+    function displayPreview(data) {
+        totalCount.textContent = `${data.total_students} students`;
+
+        // Sort departments alphabetically
+        const depts = Object.keys(data.departments).sort();
+
+        if (depts.length === 0) {
+            previewPanel.innerHTML = '<div class="text-center text-muted py-3">No valid roll numbers</div>';
+            return;
+        }
+
+        previewPanel.innerHTML = depts.map(dept => {
+            const info = data.departments[dept];
+            const isFirstYearDept = dept.includes('First Year');
+            const isPGDept = dept.includes('MBA') || dept.includes('MCA');
+            const cardClass = isFirstYearDept ? 'first-year' : (isPGDept ? 'pg' : 'senior');
+            const badgeClass = isFirstYearDept ? 'bg-success' : (isPGDept ? 'bg-warning text-dark' : 'bg-primary');
+            return `
             <div class="card dept-preview-card ${cardClass}">
                 <div class="card-body py-2">
                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -401,35 +411,35 @@ function displayPreview(data) {
                 </div>
             </div>
         `;
-    }).join('');
-}
-
-// Event listeners
-rollInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        addRoll(this.value);
-    } else if (e.key === 'Backspace' && !this.value && rollNumbers.length > 0) {
-        removeRoll(rollNumbers[rollNumbers.length - 1]);
+        }).join('');
     }
-});
 
-rollInput.addEventListener('paste', function(e) {
-    e.preventDefault();
-    const text = e.clipboardData.getData('text');
-    text.replace(/[\n\t;]/g, ',').split(',').forEach(item => {
-        item.trim().split(/\s+/).forEach(roll => {
-            if (roll.trim()) addRoll(roll);
+    // Event listeners
+    rollInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addRoll(this.value);
+        } else if (e.key === 'Backspace' && !this.value && rollNumbers.length > 0) {
+            removeRoll(rollNumbers[rollNumbers.length - 1]);
+        }
+    });
+
+    rollInput.addEventListener('paste', function (e) {
+        e.preventDefault();
+        const text = e.clipboardData.getData('text');
+        text.replace(/[\n\t;]/g, ',').split(',').forEach(item => {
+            item.trim().split(/\s+/).forEach(roll => {
+                if (roll.trim()) addRoll(roll);
+            });
         });
     });
-});
 
-document.getElementById('letterForm').addEventListener('submit', function(e) {
-    if (rollNumbers.length === 0) {
-        e.preventDefault();
-        alert('Please enter at least one roll number');
-        focusInput();
-    }
-});
+    document.getElementById('letterForm').addEventListener('submit', function (e) {
+        if (rollNumbers.length === 0) {
+            e.preventDefault();
+            alert('Please enter at least one roll number');
+            focusInput();
+        }
+    });
 </script>
 {% endblock %}

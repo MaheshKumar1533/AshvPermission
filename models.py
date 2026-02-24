@@ -1,9 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import secrets
 import string
 
 db = SQLAlchemy()
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_now():
+    return datetime.now(IST)
 
 def generate_reference_no():
     """Generate a unique 8-character alphanumeric reference number"""
@@ -21,7 +26,7 @@ class Letter(db.Model):
     subject = db.Column(db.String(500), nullable=False)
     body = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), default='pending') # pending, verified, rejected
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=get_ist_now)
     
     # Relationship to roll numbers
     roll_numbers = db.relationship('RollNumber', backref='letter', lazy=True, cascade="all, delete-orphan")
